@@ -39,11 +39,14 @@ def draw_status():
     global draw,winner
     if winner is None:
         if (XO=='x'):
-            message="PC's turn click on the screen"
+            message="PC's turn just a sec!!"
         else:
             message=XO.upper()+"'s turn"
     else:
-        message=winner.upper()+"  Won the game!"
+        if (XO=='o'):
+            message="You lost"
+        else:
+            message="You Won!!"
     if draw:
         message="Game Draw!"
 
@@ -110,39 +113,40 @@ def drawXO(row,col):
         screen.blit(o_img,(posx,posy))
         XO='x'
     pygame.display.update()
-
-def user_click():
-    global XO
+def computer():
+    global lis
     lis=[[1,1],[1,2],[1,3],[2,1],[2,2],[2,3],[3,1],[3,2],[3,3]]
-    if(XO=='x'):
-        sublis=random.choice(lis)
-        row=sublis[0]
-        col=sublis[1]
-    else:
-        x,y=pygame.mouse.get_pos()
-        if x<width/3:
-            col=1
-        if (x<width/3*2 and x>width/3):
-            col=2
-        if (x<width and x>width/3*2):
-            col=3
-        if x>width:
-            col=None
-        if y<height/3:
-            row=1
-        if (y<height/3*2 and y>height/3):
-            row=2
-        if (y<height and y>height/3*2):
-            row=3
-        if y>height:
-            row=None
+    sublis=random.choice(lis)
+    row=sublis[0]
+    col=sublis[1]
     if(row and col and (board[row-1][col-1] is None)):
         drawXO(row,col)
         check_win()
         lis.remove([row,col])
-    else:
+def user_click():
+    global XO
+    global lis
+    x,y=pygame.mouse.get_pos()
+    if x<width/3:
+        col=1
+    if (x<width/3*2 and x>width/3):
+        col=2
+    if (x<width and x>width/3*2):
+        col=3
+    if x>width:
+        col=None
+    if y<height/3:
+        row=1
+    if (y<height/3*2 and y>height/3):
+        row=2
+    if (y<height and y>height/3*2):
+        row=3
+    if y>height:
+        row=None
+    if(row and col and (board[row-1][col-1] is None)):
+        drawXO(row,col)
+        check_win()
         lis.remove([row,col])
-
 def reset_game():
     global board,XO,draw,winner
     board=[[None]*3,[None]*3,[None]*3]
@@ -157,6 +161,8 @@ while(True):
         if event.type== QUIT:
             pygame.quit()
             sys.exit()
+        if(XO=='x'):
+            computer()
         elif event.type==MOUSEBUTTONDOWN:
             user_click()
             if(winner or draw):
